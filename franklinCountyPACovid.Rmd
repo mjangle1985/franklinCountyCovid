@@ -1,0 +1,68 @@
+---
+title: "Franklin County PA Covid"
+author: "Matthew Angle"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+##Current Data
+
+The data within this model is limited. There exists no easy package in R for PA Coronavirus cases by county. I've entered in this data manually. 
+
+```{r setup, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+#load libs
+library("tidyverse")
+library("ggplot2")
+
+franklinCountyCorona <- data.frame("day" = c(seq(1,12)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 12), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19))
+
+```
+
+
+##Fit
+
+The fit model
+
+```{r fit}
+
+fit <- lm(formula = log(cases) ~ day, data = franklinCountyCorona)
+
+summary(fit)
+
+````
+
+
+##Using the model
+
+Useing the model to generate data for an additional amount of time. Placed in final model
+
+```{r use}
+newDay <-data.frame("day" = c(seq(1, 30)))
+nextTwentyDays <-predict(fit, newDay)
+nextTwentyDays <- as.data.frame(nextTwentyDays)
+tmp <- seq(as.Date("2020-03-20"), by = "days", length.out = 30)
+names(nextTwentyDays)[1] <- "cases"
+nextTwentyDays[1,1] <- 1
+nextTwentyDays <- mutate(nextTwentyDays, 
+                         "day"   = c(seq(1, 30)), 
+                         "cases" = ceiling(10^log(nextTwentyDays$cases)), 
+                         "dates" = tmp)
+finalModel<- merge(nextTwentyDays, franklinCountyCorona, by = "dates", all = TRUE)
+````
+
+##Plot the data
+
+Used the data from the model to plot 
+
+```{r plot}
+ggplot(finalModel, aes(x = dates)) +
+  geom_point(aes(y = cases.x), color = "darkgrey") +
+  geom_point(aes(y = cases.y), color = "red") +
+  geom_path(aes(y = cases.x), color = "grey") +
+  geom_path(aes(y = cases.y), color = "black") +
+  labs(x = "Dates", y = "Cases") +
+  ggtitle("Franklin County PA confirmed Covid19 Cases Model 30 Days") +
+  theme_bw()
+```
