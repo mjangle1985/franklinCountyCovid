@@ -2,11 +2,11 @@
 title: "Franklin County PA Covid"
 author: "Matthew Angle"
 output:
-  pdf_document: default
   html_notebook: default
+  pdf_document: default
 ---
 
-##Current Data
+## Current Data
 
 The data within this model is limited. There exists no easy package in R for PA Coronavirus cases by county. I've entered in this data manually. 
 
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(error = TRUE)
 library("tidyverse")
 library("ggplot2")
 
-franklinCountyCorona <- data.frame("day" = c(seq(1,12)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 12), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19))
+franklinCountyCorona <- data.frame("day" = c(seq(1,13)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 13), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21))
 
 ```
 
@@ -36,7 +36,7 @@ summary(fit)
 
 ##Using the model
 
-Useing the model to generate data for an additional amount of time. Placed in final model
+Using the model to generate data for an additional amount of time. Placed in final model
 
 ```{r use}
 newDay <-data.frame("day" = c(seq(1, 30)))
@@ -44,6 +44,7 @@ nextTwentyDays <-predict(fit, newDay)
 nextTwentyDays <- as.data.frame(nextTwentyDays)
 tmp <- seq(as.Date("2020-03-20"), by = "days", length.out = 30)
 names(nextTwentyDays)[1] <- "cases"
+#has a null value assume model starts at 1
 nextTwentyDays[1,1] <- 1
 nextTwentyDays <- mutate(nextTwentyDays, 
                          "day"   = c(seq(1, 30)), 
