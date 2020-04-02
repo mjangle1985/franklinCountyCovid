@@ -1,2 +1,2 @@
 # franklinCountyCovid
-A log model fit to predict Covid cases in Franklin county from the first day day of detection. 
+A model fit to predict Covid cases in Franklin county, PA from the first day of detection. 
