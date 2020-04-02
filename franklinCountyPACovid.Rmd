@@ -2,8 +2,10 @@
 title: "Franklin County PA Covid"
 author: "Matthew Angle"
 output:
-  html_notebook: default
   pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
 ---
 
 ## Current Data
@@ -45,12 +47,14 @@ nextTwentyDays <- as.data.frame(nextTwentyDays)
 tmp <- seq(as.Date("2020-03-20"), by = "days", length.out = 30)
 names(nextTwentyDays)[1] <- "cases"
 #has a null value assume model starts at 1
-nextTwentyDays[1,1] <- 1
+#nextTwentyDays[1,1] <- 1
 nextTwentyDays <- mutate(nextTwentyDays, 
                          "day"   = c(seq(1, 30)), 
-                         "cases" = ceiling(10^log(nextTwentyDays$cases)), 
+                         "cases" = ceiling(exp(nextTwentyDays$cases)), 
                          "dates" = tmp)
 finalModel<- merge(nextTwentyDays, franklinCountyCorona, by = "dates", all = TRUE)
+
+(finalModel)
 ````
 
 ##Plot the data
@@ -64,6 +68,6 @@ ggplot(finalModel, aes(x = dates)) +
   geom_path(aes(y = cases.x), color = "grey") +
   geom_path(aes(y = cases.y), color = "black") +
   labs(x = "Dates", y = "Cases") +
-  ggtitle("Franklin County PA confirmed Covid19 Cases Model 30 Days") +
+  ggtitle("Franklin County PA Confirmed Covid19 Cases Model 30 Days") +
   theme_bw()
 ```
