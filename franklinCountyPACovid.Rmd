@@ -18,7 +18,7 @@ knitr::opts_chunk$set(error = TRUE)
 library("tidyverse")
 library("ggplot2")
 
-franklinCountyCorona <- data.frame("day" = c(seq(1,13)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 13), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21))
+franklinCountyCorona <- data.frame("day" = c(seq(1,14)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 14), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23))
 
 ```
 
