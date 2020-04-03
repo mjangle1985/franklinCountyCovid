@@ -1,11 +1,7 @@
 ---
 title: "Franklin County PA Covid"
 author: "Matthew Angle"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
-  html_notebook: default
+output: pdf_document
 ---
 
 ## Current Data
@@ -17,8 +13,25 @@ knitr::opts_chunk$set(error = TRUE)
 #load libs
 library("tidyverse")
 library("ggplot2")
+library("httr")
+library("rvest")
+
+```
+
+##Scraping PA Tables Making DF's
+
+```{r scrape}
+
 
 franklinCountyCorona <- data.frame("day" = c(seq(1,14)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 14), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23))
+
+url <- 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Archives.aspx'
+ws <- GET(url)
+
+tbls <- html_nodes(content(ws), "table")
+print((html_table(tbls[[4]])))
+
+
 
 ```
 
