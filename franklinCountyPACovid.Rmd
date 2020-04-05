@@ -23,7 +23,9 @@ library("rvest")
 ```{r scrape}
 
 
-franklinCountyCorona <- data.frame("day" = c(seq(1,15)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 15), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23, 26))
+franklinCountyCorona <- data.frame("day" = c(seq(1,16)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = 16), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23, 26, 30))
+
+franklinCountyCorona
 
 url <- 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Archives.aspx'
 ws <- GET(url)
@@ -43,6 +45,7 @@ The fit model
 ```{r fit}
 
 fit <- lm(formula = log(cases) ~ day , data = franklinCountyCorona)
+
 
 summary(fit)
 
