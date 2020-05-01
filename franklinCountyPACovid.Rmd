@@ -83,9 +83,11 @@ Used the data from the model to plot
 
 ```{r plot}
 ggplot(finalModel, aes(x = dates)) +
+  geom_point(aes(y = cases.x), color = "darkgrey") +
   geom_point(aes(y = cases.y), color = "red") +
+  geom_path(aes(y = cases.x), color = "grey") +
   geom_path(aes(y = cases.y), color = "black") +
   labs(x = "Dates", y = "Cases") +
-  ggtitle("Franklin County PA Confirmed Covid19 Cases Model Days") +
+  ggtitle("Franklin County PA Confirmed Covid19 Cases Model 30 Days") +
   theme_bw()
 ```
