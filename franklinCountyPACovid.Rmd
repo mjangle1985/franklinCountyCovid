@@ -22,11 +22,14 @@ library("rvest")
 
 ```{r scrape}
 
-daySinceFirstCase <- 40
+daySinceFirstCase <- 42
 
-franklinCountyCorona <- data.frame("day" = c(seq(1,daySinceFirstCase)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = daySinceFirstCase), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23, 26, 30, 32, 39, 43, 52, 57, 64, 69, 78, 80, 89, 106, 111, 115, 143, 152, 151, 164, 181, 205, 227, 237, 264, 284, 313))
+franklinCountyCorona <- data.frame("day" = c(seq(1,daySinceFirstCase)), "dates" = seq(as.Date("2020-03-20"), by = "days", length.out = daySinceFirstCase), "cases" = c(1, 1, 1, 1, 3, 5, 5, 5, 7, 11, 12, 19, 21, 23, 26, 30, 32, 39, 43, 52, 57, 64, 69, 78, 80, 89, 106, 111, 115, 143, 152, 151, 164, 181, 205, 227, 237, 264, 284, 313, 325, 351))
 
+franklinCountyCorona %>% mutate(newCases = cases - lag(cases, default = first(cases)))->
 franklinCountyCorona
+
+  
 
 url <- 'https://www.health.pa.gov/topics/disease/coronavirus/Pages/Archives.aspx'
 ws <- GET(url)
@@ -43,7 +46,7 @@ The fit model
 
 ```{r fit}
 
-fit <- lm(formula = log(cases) ~ day , data = franklinCountyCorona)
+fit <- lm(formula = cases ~ day , data = franklinCountyCorona)
 
 
 summary(fit)
@@ -56,26 +59,37 @@ summary(fit)
 Using the model to generate data for an additional amount of time. Placed in final model
 
 ```{r use}
-newDay <-data.frame("day" = c(seq(1, 40)))
+newDay <-data.frame("day" = c(seq(1, 50)))
 nextTwentyDays <-predict(fit, newDay)
 nextTwentyDays <- as.data.frame(nextTwentyDays)
-tmp <- seq(as.Date("2020-03-20"), by = "days", length.out = 40)
+tmp <- seq(as.Date("2020-03-20"), by = "days", length.out = 50)
 names(nextTwentyDays)[1] <- "cases"
 #has a null value assume model starts at 1
 #nextTwentyDays[1,1] <- 1
-nextTwentyDays <- mutate(nextTwentyDays, 
-                         "day"   = c(seq(1, 40)), 
-                         "cases" = ceiling(exp(nextTwentyDays$cases)), 
-                         "dates" = tmp)
-finalModel<- merge(nextTwentyDays, franklinCountyCorona, by = "dates", all = TRUE)
 #nextTwentyDays <- mutate(nextTwentyDays, 
-#                         "day"   = c(seq(1, 30)), 
-#                         "cases" = ceiling(nextTwentyDays$cases), 
+#                         "day"   = c(seq(1, 50)), 
+#                         "cases" = ceiling(exp(nextTwentyDays$cases)), 
 #                         "dates" = tmp)
 #finalModel<- merge(nextTwentyDays, franklinCountyCorona, by = "dates", all = TRUE)
+nextTwentyDays <- mutate(nextTwentyDays, 
+                         "day"   = c(seq(1, 50)), 
+                         "cases" = ceiling(nextTwentyDays$cases), 
+                         "dates" = tmp)
+finalModel<- merge(nextTwentyDays, franklinCountyCorona, by = "dates", all = TRUE)
 
 (finalModel)
 ````
+
+```{r plot}
+franklinCountyCorona
+
+franklinCountyCorona %>% 
+  ggplot(aes(x = dates, y = newCases)) +
+  geom_col() +
+  labs(x = "Dates", y = "New Cases") +
+  ggtitle("Franklin County PA New Covid19 Cases 40 Days") +
+  theme_bw()
+```
 
 ##Plot the data
 
@@ -84,10 +98,17 @@ Used the data from the model to plot
 ```{r plot}
 ggplot(finalModel, aes(x = dates)) +
   geom_point(aes(y = cases.x), color = "darkgrey") +
-  geom_point(aes(y = cases.y), color = "red") +
   geom_path(aes(y = cases.x), color = "grey") +
+  geom_point(aes(y = cases.y), color = "red") +
   geom_path(aes(y = cases.y), color = "black") +
   labs(x = "Dates", y = "Cases") +
-  ggtitle("Franklin County PA Confirmed Covid19 Cases Model 30 Days") +
+  ggtitle("Franklin County PA Confirmed Covid19 Cases Model 40 Days") +
+  theme_bw()
+
+ggplot(finalModel, aes(x = dates)) +
+  geom_point(aes(y = cases.y), color = "red") +
+  geom_path(aes(y = cases.y), color = "black") +
+  labs(x = "Dates", y = "Cases") +
+  ggtitle(paste("Franklin County PA Confirmed Covid19 Cases Model",daySinceFirstCase,"Days")) +
   theme_bw()
 ```
